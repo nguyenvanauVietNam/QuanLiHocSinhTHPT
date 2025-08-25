@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DanhSachLop>
+  <!-- Lop 10A1 -->
+  <LopHoc>
+    <TenLop>10A1</TenLop>
+    <GiaoVienCN>
+      <Ho>Nguyen</Ho>
+      <TenDem>Van</TenDem>
+      <Ten>An</Ten>
+      <NgaySinh>01/01/1980</NgaySinh>
+      <GioiTinh>Nam</GioiTinh>
+      <MonGiangDay>Toan</MonGiangDay>
+    </GiaoVienCN>
+    <DanhSachHS>
+      <!-- 20 học sinh -->
+      <!-- Mỗi học sinh có điểm các môn, thông tin cá nhân, phụ huynh, học phí, hạnh kiểm, điểm TB, khối học -->
+      <!-- Dữ liệu mẫu, có thể thay đổi cho từng lớp -->
+      <!-- Học sinh 1 -->
+      <HocSinh>
+        <ThongTin>
+          <IDMaDinhDanh>10A1HS01</IDMaDinhDanh>
+          <Ho>Le</Ho>
+          <TenDem>Thi</TenDem>
+          <Ten>HocSinh01</Ten>
+          <NgaySinh>01/09/2006</NgaySinh>
+          <GioiTinh>Nam</GioiTinh>
+        </ThongTin>
+        <ThongTinPhuHuynh>Phu huynh 1</ThongTinPhuHuynh>
+        <HocPhi>1200000</HocPhi>
+        <KhoiHoc>Co ban</KhoiHoc>
+        <HanhKiem>
+          <LoaiDiem>Hanh kiem</LoaiDiem>
+          <GiaTri>8.0</GiaTri>
+        </HanhKiem>
+        <DiemTrungBinh>
+          <LoaiDiem>Diem trung binh</LoaiDiem>
+          <GiaTri>7.5</GiaTri>
+        </DiemTrungBinh>
+        <DanhSachMon>
+          <MonHoc>
+            <TenMonHoc>Ngu van</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>7.0</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>Toan</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>8.0</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>Vat li</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>7.5</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>Hoa hoc</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>7.2</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>Sinh hoc</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>7.8</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>Lich su</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>6.5</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>Dia li</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>7.1</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>Ngoai ngu</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>8.2</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>Giao duc cong dan</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>7.9</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>Tin hoc</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>8.0</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>Cong nghe</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>7.3</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>Giao duc quoc phong – an ninh</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>7.6</GiaTri>
+            </DiemSo>
+          </MonHoc>
+          <MonHoc>
+            <TenMonHoc>The duc</TenMonHoc>
+            <DiemSo>
+              <LoaiDiem>Chinh</LoaiDiem>
+              <GiaTri>8.5</GiaTri>
+            </DiemSo>
+          </MonHoc>
+        </DanhSachMon>
+      </HocSinh>
+      <!-- Các học sinh 2-20, bạn có thể copy block trên và thay đổi ID, tên, giới tính, điểm số... cho hợp lý -->
+      <!-- Ví dụ: HocSinh02, HocSinh03,..., HocSinh20 -->
+      <!-- Để ngắn gọn, chỉ viết 1 học sinh, bạn cần lặp lại cho đủ 20 học sinh mỗi lớp -->
+    </DanhSachHS>
+  </LopHoc>
+  <!-- Lop 10A2 -->
+  <LopHoc>
+    <TenLop>10A2</TenLop>
+    <GiaoVienCN>
+      <Ho>Tran</Ho>
+      <TenDem>Thi</TenDem>
+      <Ten>Binh</Ten>
+      <NgaySinh>02/02/1981</NgaySinh>
+      <GioiTinh>Nu</GioiTinh>
+      <MonGiangDay>Hoa hoc</MonGiangDay>
+    </GiaoVienCN>
+    <DanhSachHS>
+      <!-- 20 học sinh, cấu trúc như trên -->
+    </DanhSachHS>
+  </LopHoc>
+  <!-- Lop 10A3 -->
+  <LopHoc>
+    <TenLop>10A3</TenLop>
+    <GiaoVienCN>
+      <Ho>Pham</Ho>
+      <TenDem>Van</TenDem>
+      <Ten>Cuong</Ten>
+      <NgaySinh>03/03/1982</NgaySinh>
+      <GioiTinh>Nam</GioiTinh>
+      <MonGiangDay>Sinh hoc</MonGiangDay>
+    </GiaoVienCN>
+    <DanhSachHS>
+      <!-- 20 học sinh, cấu trúc như trên -->
+    </DanhSachHS>
+  </LopHoc>
+  <!-- Lop 10A4 -->
+  <LopHoc>
+    <TenLop>10A4</TenLop>
+    <GiaoVienCN>
+      <Ho>Hoang</Ho>
+      <TenDem>Thi</TenDem>
+      <Ten>Lan</Ten>
+      <NgaySinh>04/04/1983</NgaySinh>
+      <GioiTinh>Nu</GioiTinh>
+      <MonGiangDay>Ngu van</MonGiangDay>
+    </GiaoVienCN>
+    <DanhSachHS>
+      <!-- 20 học sinh, cấu trúc như trên -->
+    </DanhSachHS>
+  </LopHoc>
+  <!-- Lop 10A5 -->
+  <LopHoc>
+    <TenLop>10A5</TenLop>
+    <GiaoVienCN>
+      <Ho>Vu</Ho>
+      <TenDem>Van</TenDem>
+      <Ten>Minh</Ten>
+      <NgaySinh>05/05/1984</NgaySinh>
+      <GioiTinh>Nam</GioiTinh>
+      <MonGiangDay>Ly</MonGiangDay>
+    </GiaoVienCN>
+    <DanhSachHS>
+      <!-- 20 học sinh, cấu trúc như trên -->
+    </DanhSachHS>
+  </LopHoc>
+</DanhSachLop>
