@@ -109,6 +109,9 @@ struct LopHoc {
         return giaoVienCN.thongTin.ho + " " + giaoVienCN.thongTin.tenDem + " " + giaoVienCN.thongTin.ten; 
 	}
 };
+
+inline string xepLoaiHocLuc(float diemTB);
+inline string xepLoaiHanhKiem(float diemHK);
 #pragma endregion
 
 #pragma region Khoi tao
@@ -151,7 +154,7 @@ inline LopHoc khoiTaoLopMau() {
     lop.tenLop = "10A1";
 
     // Giáo viên chủ nhiệm mẫu
-    lop.giaoVienCN.thongTin = {"Nguyen", "Van", "An", "01/01/1980", "Nam"};
+    lop.giaoVienCN.thongTin = {"GV1", "Nguyen", "Van", "An", "01/01/1980", "Nam"};
     lop.giaoVienCN.monGiangDay = "Toan";
 
     // 5 học sinh mẫu
