@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="ProjectCPP_QuanLiHocSinhTHPT.vcxproj" />
+  <Project Path="ProjectCPP_QuanLiHocSinhTHPT.vcxproj" Id="c162108f-9eec-43a8-a37e-eaa6e4bcf98a" />
 </Solution>

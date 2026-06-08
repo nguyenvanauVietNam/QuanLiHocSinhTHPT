@@ -31,12 +31,12 @@ void menuLop(LopHoc& lop, const string& xmlFile, vector<LopHoc>& dsLop) {
         std::cin >> luaChon;
         if (std::cin.fail()) {
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            xoaDongNhapConLai();
             std::cout << "[!] Vui long nhap so nguyen.\n";
             luaChon = -1;
             continue;
         }
-        std::cin.ignore();
+        xoaDongNhapConLai();
 
         switch (luaChon) {
         case 1:
@@ -70,6 +70,7 @@ void menuLop(LopHoc& lop, const string& xmlFile, vector<LopHoc>& dsLop) {
             string id; std::getline(std::cin, id);
             HocSinh* hs = timHocSinhTheoID(lop, id);
             if (!hs) { std::cout << "[!] Khong tim thay ID: " << id << ".\n"; break; }
+            inThongTinHocSinhFull(*hs);
             std::cout << "\n-- NHAP THONG TIN MOI (ID giu nguyen: " << id << ") --\n";
             HocSinh hsMoi = nhapThongTinHocSinh();
             hsMoi.thongTin.IDMaDinhDanh = id;
@@ -150,7 +151,7 @@ void menuLop(LopHoc& lop, const string& xmlFile, vector<LopHoc>& dsLop) {
                 std::cout << "Nhap ID hoc sinh: ";
                 string id; std::getline(std::cin, id);
                 std::cout << "Nhap hoc phi moi: ";
-                double hp; std::cin >> hp; std::cin.ignore();
+                double hp = nhapHocPhiHopLe();
                 if (capNhatHocPhi(lop, id, hp))
                     std::cout << "[OK] Da cap nhat hoc phi.\n";
                 else
@@ -189,6 +190,7 @@ void menuLop(LopHoc& lop, const string& xmlFile, vector<LopHoc>& dsLop) {
             break;
 
         case 15: {
+            inThongTinLopChiTiet(lop);
             std::cout << "Ten lop moi (Enter de giu '" << lop.tenLop << "'): ";
             string tenMoi; std::getline(std::cin, tenMoi);
             if (!tenMoi.empty()) lop.tenLop = tenMoi;
@@ -224,7 +226,8 @@ void menuLop(LopHoc& lop, const string& xmlFile, vector<LopHoc>& dsLop) {
 // Menu chính — quản lý toàn trường
 // ----------------------------------------------------------------
 int main() {
-    const string xmlFile = "THPT.xml";
+    cauHinhConsoleTiengViet();
+    const string xmlFile = timDuongDanXML("THPT.xml");
 
     vector<LopHoc> dsLop = docDanhSachLopTuXML(xmlFile);
     if (dsLop.empty()) {
@@ -255,23 +258,25 @@ int main() {
         std::cout << "  " << (n + 4) << ". Thong ke toan truong\n";
         std::cout << "  " << (n + 5) << ". Canh bao HS yeu/kem toan truong\n";
         std::cout << "  " << (n + 6) << ". Bao cao hoc phi toan truong\n";
+        std::cout << "  " << (n + 7) << ". Xuat danh sach lop ra txt\n";
         std::cout << "  0. Thoat\n";
         std::cout << "Lua chon: ";
         std::cin >> luaChon;
         if (std::cin.fail()) {
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            xoaDongNhapConLai();
             std::cout << "[!] Vui long nhap so nguyen.\n";
             luaChon = -1;
             continue;
         }
-        std::cin.ignore();
+        xoaDongNhapConLai();
 
         if (luaChon >= 1 && luaChon <= n) {
             menuLop(dsLop[luaChon - 1], xmlFile, dsLop);
         }
         else if (luaChon == n + 1) {
             // Thêm lớp mới
+            inDanhSachLopVaQuy(dsLop);
             std::cout << "\n-- THEM LOP MOI --\n";
             LopHoc lopMoi = nhapThongTinLop();
             bool trung = false;
@@ -286,6 +291,7 @@ int main() {
         }
         else if (luaChon == n + 2) {
             // Xóa lớp
+            inDanhSachLopVaQuy(dsLop);
             std::cout << "Nhap ten lop can xoa: ";
             string tenLop; std::getline(std::cin, tenLop);
             std::cout << "Xac nhan xoa lop " << tenLop << "? (y/n): ";
@@ -324,6 +330,13 @@ int main() {
         }
         else if (luaChon == n + 6) {
             inBaoCaoHocPhiToanTruong(dsLop);
+        }
+        else if (luaChon == n + 7) {
+            string outFile = "DanhSachLop_QuyHocPhi.txt";
+            if (xuatDanhSachLopRaTxt(dsLop, outFile))
+                std::cout << "[OK] Da xuat danh sach lop va quy hoc phi: " << outFile << "\n";
+            else
+                std::cout << "[!] Khong the tao file: " << outFile << "\n";
         }
         else if (luaChon != 0) {
             std::cout << "[!] Lua chon khong hop le.\n";
