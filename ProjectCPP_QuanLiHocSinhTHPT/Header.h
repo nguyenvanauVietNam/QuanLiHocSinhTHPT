@@ -130,6 +130,171 @@ struct LopHoc {
 inline string xepLoaiHocLuc(float diemTB);
 inline string xepLoaiHanhKiem(float diemHK);
 
+static inline vector<unsigned int> decodeUtf8Codepoints(const string& s) {
+    vector<unsigned int> out;
+    for (size_t i = 0; i < s.size();) {
+        unsigned char c = (unsigned char)s[i];
+        if (c < 0x80) {
+            out.push_back(c);
+            ++i;
+        }
+        else if ((c & 0xE0) == 0xC0 && i + 1 < s.size()) {
+            out.push_back(((c & 0x1F) << 6) | ((unsigned char)s[i + 1] & 0x3F));
+            i += 2;
+        }
+        else if ((c & 0xF0) == 0xE0 && i + 2 < s.size()) {
+            out.push_back(((c & 0x0F) << 12) |
+                          (((unsigned char)s[i + 1] & 0x3F) << 6) |
+                          ((unsigned char)s[i + 2] & 0x3F));
+            i += 3;
+        }
+        else if ((c & 0xF8) == 0xF0 && i + 3 < s.size()) {
+            out.push_back(((c & 0x07) << 18) |
+                          (((unsigned char)s[i + 1] & 0x3F) << 12) |
+                          (((unsigned char)s[i + 2] & 0x3F) << 6) |
+                          ((unsigned char)s[i + 3] & 0x3F));
+            i += 4;
+        }
+        else {
+            ++i;
+        }
+    }
+    return out;
+}
+
+static inline bool cp1252Byte(unsigned int cp, unsigned char& b) {
+    if (cp <= 0xFF) { b = (unsigned char)cp; return true; }
+    switch (cp) {
+    case 0x20AC: b = 0x80; return true;
+    case 0x201A: b = 0x82; return true;
+    case 0x0192: b = 0x83; return true;
+    case 0x201E: b = 0x84; return true;
+    case 0x2026: b = 0x85; return true;
+    case 0x2020: b = 0x86; return true;
+    case 0x2021: b = 0x87; return true;
+    case 0x02C6: b = 0x88; return true;
+    case 0x2030: b = 0x89; return true;
+    case 0x0160: b = 0x8A; return true;
+    case 0x2039: b = 0x8B; return true;
+    case 0x0152: b = 0x8C; return true;
+    case 0x017D: b = 0x8E; return true;
+    case 0x2018: b = 0x91; return true;
+    case 0x2019: b = 0x92; return true;
+    case 0x201C: b = 0x93; return true;
+    case 0x201D: b = 0x94; return true;
+    case 0x2022: b = 0x95; return true;
+    case 0x2013: b = 0x96; return true;
+    case 0x2014: b = 0x97; return true;
+    case 0x02DC: b = 0x98; return true;
+    case 0x2122: b = 0x99; return true;
+    case 0x0161: b = 0x9A; return true;
+    case 0x203A: b = 0x9B; return true;
+    case 0x0153: b = 0x9C; return true;
+    case 0x017E: b = 0x9E; return true;
+    case 0x0178: b = 0x9F; return true;
+    default: return false;
+    }
+}
+
+static inline vector<unsigned int> repairMojibakeUtf8(const string& s) {
+    vector<unsigned int> cps = decodeUtf8Codepoints(s);
+    string bytes;
+    bool changed = false;
+    for (unsigned int cp : cps) {
+        unsigned char b = 0;
+        if (!cp1252Byte(cp, b)) return cps;
+        bytes.push_back((char)b);
+        if (cp > 0x7F) changed = true;
+    }
+    if (!changed) return cps;
+    vector<unsigned int> repaired = decodeUtf8Codepoints(bytes);
+    return repaired.empty() ? cps : repaired;
+}
+
+static inline string asciiFromVietnameseCp(unsigned int cp) {
+    switch (cp) {
+    case 0x00C0: case 0x00C1: case 0x00C2: case 0x00C3:
+    case 0x0102: case 0x1EA0: case 0x1EA2: case 0x1EA4:
+    case 0x1EA6: case 0x1EA8: case 0x1EAA: case 0x1EAC:
+    case 0x1EAE: case 0x1EB0: case 0x1EB2: case 0x1EB4:
+    case 0x1EB6: return "A";
+    case 0x00E0: case 0x00E1: case 0x00E2: case 0x00E3:
+    case 0x0103: case 0x1EA1: case 0x1EA3: case 0x1EA5:
+    case 0x1EA7: case 0x1EA9: case 0x1EAB: case 0x1EAD:
+    case 0x1EAF: case 0x1EB1: case 0x1EB3: case 0x1EB5:
+    case 0x1EB7: return "a";
+    case 0x00C8: case 0x00C9: case 0x00CA: case 0x1EB8:
+    case 0x1EBA: case 0x1EBC: case 0x1EBE: case 0x1EC0:
+    case 0x1EC2: case 0x1EC4: case 0x1EC6: return "E";
+    case 0x00E8: case 0x00E9: case 0x00EA: case 0x1EB9:
+    case 0x1EBB: case 0x1EBD: case 0x1EBF: case 0x1EC1:
+    case 0x1EC3: case 0x1EC5: case 0x1EC7: return "e";
+    case 0x00CC: case 0x00CD: case 0x0128: case 0x1EC8:
+    case 0x1ECA: return "I";
+    case 0x00EC: case 0x00ED: case 0x0129: case 0x1EC9:
+    case 0x1ECB: return "i";
+    case 0x00D2: case 0x00D3: case 0x00D4: case 0x00D5:
+    case 0x01A0: case 0x1ECC: case 0x1ECE: case 0x1ED0:
+    case 0x1ED2: case 0x1ED4: case 0x1ED6: case 0x1ED8:
+    case 0x1EDA: case 0x1EDC: case 0x1EDE: case 0x1EE0:
+    case 0x1EE2: return "O";
+    case 0x00F2: case 0x00F3: case 0x00F4: case 0x00F5:
+    case 0x01A1: case 0x1ECD: case 0x1ECF: case 0x1ED1:
+    case 0x1ED3: case 0x1ED5: case 0x1ED7: case 0x1ED9:
+    case 0x1EDB: case 0x1EDD: case 0x1EDF: case 0x1EE1:
+    case 0x1EE3: return "o";
+    case 0x00D9: case 0x00DA: case 0x0168: case 0x01AF:
+    case 0x1EE4: case 0x1EE6: case 0x1EE8: case 0x1EEA:
+    case 0x1EEC: return "U";
+    case 0x00F9: case 0x00FA: case 0x0169: case 0x01B0:
+    case 0x1EE5: case 0x1EE7: case 0x1EE9: case 0x1EEB:
+    case 0x1EED: return "u";
+    case 0x00DD: case 0x1EF2: case 0x1EF4: case 0x1EF6:
+    case 0x1EF8: return "Y";
+    case 0x00FD: case 0x1EF3: case 0x1EF5: case 0x1EF7:
+    case 0x1EF9: return "y";
+    case 0x0110: return "D";
+    case 0x0111: return "d";
+    case 0x0300: case 0x0301: case 0x0303: case 0x0309:
+    case 0x0323: return "";
+    default:
+        if (cp < 0x80) return string(1, (char)cp);
+        return "";
+    }
+}
+
+inline string boDauTiengViet(const string& s) {
+    vector<unsigned int> cps = repairMojibakeUtf8(s);
+    string out;
+    for (unsigned int cp : cps) out += asciiFromVietnameseCp(cp);
+    return out;
+}
+
+inline void chuanHoaNguoiKhongDau(Nguoi& n) {
+    n.ho = boDauTiengViet(n.ho);
+    n.tenDem = boDauTiengViet(n.tenDem);
+    n.ten = boDauTiengViet(n.ten);
+    n.gioiTinh = boDauTiengViet(n.gioiTinh);
+}
+
+inline void chuanHoaHocSinhKhongDau(HocSinh& hs) {
+    chuanHoaNguoiKhongDau(hs.thongTin);
+    hs.thongTinPhuHuynh = boDauTiengViet(hs.thongTinPhuHuynh);
+    hs.khoiHoc = boDauTiengViet(hs.khoiHoc);
+    for (auto& mon : hs.danhSachMon) mon.tenMonHoc = boDauTiengViet(mon.tenMonHoc);
+}
+
+inline void chuanHoaGiaoVienKhongDau(GiaoVien& gv) {
+    chuanHoaNguoiKhongDau(gv.thongTin);
+    gv.monGiangDay = boDauTiengViet(gv.monGiangDay);
+}
+
+inline void chuanHoaLopKhongDau(LopHoc& lop) {
+    lop.tenLop = boDauTiengViet(lop.tenLop);
+    chuanHoaGiaoVienKhongDau(lop.giaoVienCN);
+    for (auto& hs : lop.danhSachHS) chuanHoaHocSinhKhongDau(hs);
+}
+
 inline void cauHinhConsoleTiengViet() {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
@@ -305,8 +470,23 @@ const vector<string> DANH_SACH_TEN_MON_HOC = {
 // H�m kh?i t?o danh s�ch c�c m�n h?c THPT v?i di?m s? m?c d?nh
 // Tr? v? vector ch?a c�c struct MonHoc v?i t�n m�n h?c d� khai b�o v� di?m s? ban d?u l� r?ng
 inline vector<MonHoc> khoiTaoDanhSachMonHoc() {
+    const vector<string> monHocKhongDau = {
+        "Ngu van",
+        "Toan",
+        "Vat li",
+        "Hoa hoc",
+        "Sinh hoc",
+        "Lich su",
+        "Dia li",
+        "Ngoai ngu",
+        "Giao duc cong dan",
+        "Tin hoc",
+        "Cong nghe",
+        "Giao duc quoc phong - an ninh",
+        "The duc"
+    };
     vector<MonHoc> ds;
-    for (const auto& tenMon : DANH_SACH_TEN_MON_HOC) {
+    for (const auto& tenMon : monHocKhongDau) {
         MonHoc mon;
         mon.tenMonHoc = tenMon;
         // hk1, hk2 kh?i t?o = 0.0f m?c d?nh
@@ -323,6 +503,9 @@ inline LopHoc khoiTaoLopMau() {
     // Gi�o vi�n ch? nhi?m m?u
     lop.giaoVienCN.thongTin = {"GV1", "Nguy?n", "Van", "An", "01/01/1980", "Nam"};
     lop.giaoVienCN.monGiangDay = "To�n";
+
+    lop.giaoVienCN.thongTin = {"GV1", "Nguyen", "Van", "An", "01/01/1980", "Nam"};
+    lop.giaoVienCN.monGiangDay = "Toan";
 
     // 5 h?c sinh m?u
     for (int i = 0; i < 5; ++i) {
@@ -349,6 +532,18 @@ inline LopHoc khoiTaoLopMau() {
         hs.diemTBHK2   = 7.8f + i * 0.2f;
         hs.diemTBNam   = (hs.diemTBHK1 + hs.diemTBHK2 * 2.0f) / 3.0f;
         hs.khoiHoc = "Co b?n";
+        hs.thongTin.ho = "Le";
+        hs.thongTin.tenDem = "Thi";
+        hs.thongTin.ten = "HocSinh" + std::to_string(i + 1);
+        hs.thongTin.gioiTinh = (i % 2 == 0) ? "Nam" : "Nu";
+        hs.thongTinPhuHuynh = "Phu huynh " + std::to_string(i + 1);
+        hs.khoiHoc = "Co ban";
+        for (auto& mon : hs.danhSachMon) {
+            if (mon.tenMonHoc == "Toan" || mon.tenMonHoc == "Ngu van") {
+                mon.hk1 = {7.5f + i*0.2f, 7.0f, 8.0f + i*0.1f, 7.8f + i*0.1f, 7.5f + i*0.2f};
+                mon.hk2 = {8.0f + i*0.1f, 7.5f, 8.5f + i*0.1f, 8.2f + i*0.1f, 8.0f + i*0.1f};
+            }
+        }
         lop.danhSachHS.push_back(hs);
     }
 
@@ -475,7 +670,7 @@ static inline string safeGetText(XMLElement* parent, const char* childTag, const
     if (!parent) return def;
     XMLElement* child = parent->FirstChildElement(childTag);
     if (!child || !child->GetText()) return def;
-    return child->GetText();
+    return boDauTiengViet(child->GetText());
 }
 
 static inline float safeToFloat(const string& value, float def = 0.0f) {
@@ -644,6 +839,11 @@ inline void capNhatDiemTrungBinh(HocSinh& hs) {
 
 // TODO 3: X?p lo?i h?c l?c theo thang di?m 10
 inline string xepLoaiHocLuc(float diemTB) {
+    if (diemTB >= 8.0f) return "Gioi";
+    if (diemTB >= 6.5f) return "Kha";
+    if (diemTB >= 5.0f) return "Trung binh";
+    if (diemTB >= 3.5f) return "Yeu";
+    return "Kem";
     if (diemTB >= 8.0f) return "Gi?i";
     if (diemTB >= 6.5f) return "Kh�";
     if (diemTB >= 5.0f) return "Trung b�nh";
@@ -653,6 +853,10 @@ inline string xepLoaiHocLuc(float diemTB) {
 
 // TODO 4: X?p lo?i h?nh ki?m theo thang di?m 10
 inline string xepLoaiHanhKiem(float diemHK) {
+    if (diemHK >= 9.0f) return "Tot";
+    if (diemHK >= 7.0f) return "Kha";
+    if (diemHK >= 5.0f) return "Trung binh";
+    return "Yeu";
     if (diemHK >= 9.0f) return "T?t";
     if (diemHK >= 7.0f) return "Kh�";
     if (diemHK >= 5.0f) return "Trung b�nh";
@@ -674,7 +878,7 @@ inline HocSinh* timHocSinhTheoID(LopHoc& lop, const string& id) {
 // TODO 6: T�m h?c sinh theo t? kh�a t�n (kh�ng ph�n bi?t hoa/thu?ng)
 inline vector<HocSinh*> timHocSinhTheoTen(LopHoc& lop, const string& tuKhoa) {
     vector<HocSinh*> ketQua;
-    string tuKhoaLower = tuKhoa;
+    string tuKhoaLower = boDauTiengViet(tuKhoa);
     std::transform(tuKhoaLower.begin(), tuKhoaLower.end(), tuKhoaLower.begin(),
                    [](unsigned char c){ return (char)::tolower(c); });
     for (auto& hs : lop.danhSachHS) {
@@ -690,7 +894,7 @@ inline vector<HocSinh*> timHocSinhTheoTen(LopHoc& lop, const string& tuKhoa) {
 // TODO 7: L?c h?c sinh theo kh?i/ban h?c trong l?p (kh�ng ph�n bi?t hoa/thu?ng)
 inline vector<HocSinh*> locHocSinhTheoKhoi(LopHoc& lop, const string& khoiHoc) {
     vector<HocSinh*> ketQua;
-    string khoiLower = khoiHoc;
+    string khoiLower = boDauTiengViet(khoiHoc);
     std::transform(khoiLower.begin(), khoiLower.end(), khoiLower.begin(),
                    [](unsigned char c){ return (char)::tolower(c); });
     for (auto& hs : lop.danhSachHS) {
@@ -731,6 +935,13 @@ inline ThongKeHocLuc thongKeHocLucLop(const LopHoc& lop) {
     float tongDiem = 0.0f;
     for (const auto& hs : lop.danhSachHS) {
         string xl = xepLoaiHocLuc(hs.diemTBNam);
+        if      (xl == "Gioi")       tk.soGioi++;
+        else if (xl == "Kha")        tk.soKha++;
+        else if (xl == "Trung binh") tk.soTrungBinh++;
+        else if (xl == "Yeu")        tk.soYeu++;
+        else                         tk.soKem++;
+        tongDiem += hs.diemTBNam;
+        continue;
         if      (xl == "Gi?i")       tk.soGioi++;
         else if (xl == "Kh�")        tk.soKha++;
         else if (xl == "Trung b�nh") tk.soTrungBinh++;
@@ -812,7 +1023,8 @@ inline bool ghiDanhSachLopVaoXML(const vector<LopHoc>& dsLop, const string& file
 
     auto addText = [&](XMLElement* parent, const char* tag, const string& val) {
         XMLElement* e = doc.NewElement(tag);
-        e->SetText(val.c_str());
+        string value = boDauTiengViet(val);
+        e->SetText(value.c_str());
         parent->InsertEndChild(e);
     };
 
@@ -1293,6 +1505,7 @@ inline HocSinh nhapThongTinHocSinh() {
     xoaDongNhapConLai();
 
     capNhatDiemTrungBinh(hs); // T? d?ng t�nh di?m TB
+    chuanHoaHocSinhKhongDau(hs);
     return hs;
 }
 
@@ -1315,6 +1528,7 @@ inline GiaoVien nhapThongTinGiaoVien() {
     } while (!laNgaySinhHopLe(gv.thongTin.ngaySinh));
     std::cout << "Gioi tinh    : "; std::getline(std::cin, gv.thongTin.gioiTinh);
     std::cout << "Mon giang day: "; std::getline(std::cin, gv.monGiangDay);
+    chuanHoaGiaoVienKhongDau(gv);
     return gv;
 }
 
@@ -1341,7 +1555,7 @@ struct KetQuaTimKiem {
 // T�m ki?m h?c sinh theo t�n ho?c ID tr�n to�n b? danh s�ch l?p
 inline vector<KetQuaTimKiem> timKiemToanTruong(vector<LopHoc>& dsLop, const string& tuKhoa) {
     vector<KetQuaTimKiem> ketQua;
-    string tuKhoaLower = tuKhoa;
+    string tuKhoaLower = boDauTiengViet(tuKhoa);
     std::transform(tuKhoaLower.begin(), tuKhoaLower.end(), tuKhoaLower.begin(),
                    [](unsigned char c){ return (char)::tolower(c); });
     for (auto& lop : dsLop) {
